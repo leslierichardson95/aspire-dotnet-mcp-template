@@ -16,7 +16,9 @@ The template also includes a sample `RandomNumberTools` class demonstrating how 
 
 - **Zero-config Inspector** — The MCP Inspector launches automatically alongside your server via the Aspire dashboard. No separate terminal, no manual URL wiring.
 - **Always-latest Inspector** — Defaults to the latest published Inspector version (`npx @modelcontextprotocol/inspector@latest`). Pin a specific version via config if needed.
-- **Aspire observability** — Built-in structured logging, distributed tracing, and health checks out of the box.
+- **Composable by design** — Need a database, cache, or message queue behind your MCP tools? Add them as Aspire components with one line each — service discovery, connection strings, and startup ordering are handled automatically.
+- **Full observability** — OpenTelemetry tracing and structured logging across every component. When an MCP tool calls a database, then a cache, then an external API, you see the full distributed trace in the Aspire dashboard.
+- **Dev/prod parity** — The same component definitions that run locally (containers for Redis, Postgres, etc.) map to real Azure resources when you deploy with `azd up`.
 - **Production-ready structure** — The McpServer project deploys independently; the AppHost and Inspector are dev-time only.
 
 ## Prerequisites
