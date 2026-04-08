@@ -6,7 +6,7 @@
   "name": "Aspire MCP Server App",
   "defaultName": "AspireMcpServer",
   "shortName": "aspire-mcp",
-  "description": "A .NET Aspire solution with an MCP server (Model Context Protocol) and MCP Inspector for testing and debugging.",
+  "description": "A .NET Aspire solution with an MCP server (Model Context Protocol) and MCP Inspector for testing and debugging. Supports C#, TypeScript, and Python MCP servers.",
   "sourceName": "AspireMcpServer",
   "preferNameDirectory": false,
   "tags": {
@@ -24,11 +24,68 @@
           "exclude": [
             "*.slnx"
           ]
+        },
+        {
+          "condition": "(McpLanguage != \"csharp\")",
+          "exclude": [
+            "AspireMcpServer.McpServer/**",
+            "AspireMcpServer.ServiceDefaults/**"
+          ]
+        },
+        {
+          "condition": "(McpLanguage != \"typescript\")",
+          "exclude": [
+            "McpServer.TypeScript/**"
+          ]
+        },
+        {
+          "condition": "(McpLanguage != \"python\")",
+          "exclude": [
+            "McpServer.Python/**"
+          ]
+        },
+        {
+          "condition": "(McpLanguage != \"csharp\")",
+          "exclude": [
+            "*.slnx"
+          ]
         }
       ]
     }
   ],
   "symbols": {
+    "McpLanguage": {
+      "type": "parameter",
+      "datatype": "choice",
+      "description": "The language for the MCP server implementation.",
+      "choices": [
+        {
+          "choice": "csharp",
+          "description": "C# MCP server using ModelContextProtocol.AspNetCore"
+        },
+        {
+          "choice": "typescript",
+          "description": "TypeScript MCP server using @modelcontextprotocol/sdk"
+        },
+        {
+          "choice": "python",
+          "description": "Python MCP server using FastMCP"
+        }
+      ],
+      "defaultValue": "csharp"
+    },
+    "IsCSharp": {
+      "type": "computed",
+      "value": "(McpLanguage == \"csharp\")"
+    },
+    "IsTypeScript": {
+      "type": "computed",
+      "value": "(McpLanguage == \"typescript\")"
+    },
+    "IsPython": {
+      "type": "computed",
+      "value": "(McpLanguage == \"python\")"
+    },
     "Framework": {
       "type": "parameter",
       "description": "The target framework for the project.",
@@ -210,16 +267,18 @@
   "primaryOutputs": [
     {
       "path": "AspireMcpServer.slnx",
-      "condition": "(hostIdentifier == \"dotnetcli\" || hostIdentifier == \"dotnetcli-preview\")"
+      "condition": "(IsCSharp && (hostIdentifier == \"dotnetcli\" || hostIdentifier == \"dotnetcli-preview\"))"
     },
     {
       "path": "AspireMcpServer.AppHost/AspireMcpServer.AppHost.csproj"
     },
     {
-      "path": "AspireMcpServer.ServiceDefaults/AspireMcpServer.ServiceDefaults.csproj"
+      "path": "AspireMcpServer.ServiceDefaults/AspireMcpServer.ServiceDefaults.csproj",
+      "condition": "(IsCSharp)"
     },
     {
-      "path": "AspireMcpServer.McpServer/AspireMcpServer.McpServer.csproj"
+      "path": "AspireMcpServer.McpServer/AspireMcpServer.McpServer.csproj",
+      "condition": "(IsCSharp)"
     }
   ],
   "postActions": [

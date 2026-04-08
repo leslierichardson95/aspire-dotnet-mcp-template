@@ -7,10 +7,28 @@ A [.NET Aspire](https://learn.microsoft.com/dotnet/aspire/) project template tha
 | Project | Description |
 |---|---|
 | **AppHost** | Aspire orchestrator that wires the MCP server and Inspector together |
-| **McpServer** | ASP.NET Core server exposing MCP tools over Streamable HTTP |
-| **ServiceDefaults** | Shared configuration for OpenTelemetry, health checks, and resilience |
+| **McpServer** | MCP server exposing tools over Streamable HTTP (C#, TypeScript, or Python) |
+| **ServiceDefaults** | *(C# only)* Shared configuration for OpenTelemetry, health checks, and resilience |
 
-The template also includes a sample `RandomNumberTools` class demonstrating how to define MCP tools using the [C# MCP SDK](https://github.com/modelcontextprotocol/csharp-sdk).
+The template includes a sample `get_random_number` tool demonstrating how to define MCP tools in your chosen language.
+
+## Language support
+
+Choose your MCP server language at scaffold time:
+
+```bash
+dotnet new aspire-mcp -n MyMcpServer --McpLanguage csharp      # default
+dotnet new aspire-mcp -n MyMcpServer --McpLanguage typescript
+dotnet new aspire-mcp -n MyMcpServer --McpLanguage python
+```
+
+| Language | MCP SDK | Server framework | Aspire hosting |
+|---|---|---|---|
+| **C#** | `ModelContextProtocol.AspNetCore` | ASP.NET Core | `AddProject<T>()` |
+| **TypeScript** | `@modelcontextprotocol/server` | Express | `AddNpmApp()` |
+| **Python** | `mcp` (FastMCP) | Built-in | `AddPythonApp()` |
+
+The AppHost (orchestrator) is always C# — that's .NET Aspire's orchestrator. The MCP Inspector integration is identical regardless of server language.
 
 ## Why use this template?
 
@@ -24,8 +42,9 @@ The template also includes a sample `RandomNumberTools` class demonstrating how 
 ## Prerequisites
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (or later)
-- [Node.js](https://nodejs.org/) (required for the MCP Inspector, which runs via `npx`)
+- [Node.js](https://nodejs.org/) (required for the MCP Inspector; also required for TypeScript server)
 - [.NET Aspire workload](https://learn.microsoft.com/dotnet/aspire/fundamentals/setup-tooling) or the [Aspire CLI](https://learn.microsoft.com/dotnet/aspire/fundamentals/aspire-cli)
+- [Python 3.10+](https://www.python.org/) *(only if using `--McpLanguage python`)*
 
 ## Getting started
 
@@ -63,6 +82,8 @@ The Inspector is pre-configured to connect to your server — just click **Conne
 
 ### Adding your own tools
 
+#### C#
+
 Replace or extend the sample tool in `MyMcpServer.McpServer/Tools/RandomNumberTools.cs`:
 
 ```csharp
@@ -76,6 +97,30 @@ public async Task<string> GetWeather(
 ```
 
 Tools are auto-discovered — any class registered with `.WithTools<T>()` in `Program.cs` is available to MCP clients.
+
+#### TypeScript
+
+Add tools in `McpServer.TypeScript/src/index.ts`:
+
+```typescript
+server.registerTool("get_weather", {
+  description: "Look up the current weather for a city.",
+  inputSchema: { city: z.string().describe("City name") },
+}, async ({ city }) => {
+  return { content: [{ type: "text", text: `Weather for ${city}: sunny` }] };
+});
+```
+
+#### Python
+
+Add tools in `McpServer.Python/server.py`:
+
+```python
+@mcp.tool()
+def get_weather(city: str) -> str:
+    """Look up the current weather for a city."""
+    return f"Weather for {city}: sunny"
+```
 
 ## Configuration
 
@@ -198,6 +243,8 @@ For the full guide, see the [official MCP Registry quickstart](https://modelcont
 
 ## Project structure
 
+### C# (default)
+
 ```
 MyMcpServer/
 ├── MyMcpServer.AppHost/           # Aspire orchestrator (dev-time only)
@@ -210,10 +257,36 @@ MyMcpServer/
 └── MyMcpServer.slnx               # Solution file
 ```
 
+### TypeScript
+
+```
+MyMcpServer/
+├── MyMcpServer.AppHost/           # Aspire orchestrator (dev-time only)
+│   └── Program.cs                 # Wires MCP server + Inspector via AddNpmApp
+└── McpServer.TypeScript/          # MCP server (Node.js)
+    ├── package.json               # Dependencies
+    ├── tsconfig.json              # TypeScript config
+    └── src/
+        └── index.ts               # Express server with MCP tools
+```
+
+### Python
+
+```
+MyMcpServer/
+├── MyMcpServer.AppHost/           # Aspire orchestrator (dev-time only)
+│   └── Program.cs                 # Wires MCP server + Inspector via AddPythonApp
+└── McpServer.Python/              # MCP server (Python)
+    ├── requirements.txt           # Dependencies
+    └── server.py                  # FastMCP server with tools
+```
+
 ## Learn more
 
 - [Model Context Protocol specification](https://spec.modelcontextprotocol.io)
 - [C# MCP SDK](https://github.com/modelcontextprotocol/csharp-sdk)
+- [TypeScript MCP SDK](https://github.com/modelcontextprotocol/typescript-sdk)
+- [Python MCP SDK](https://github.com/modelcontextprotocol/python-sdk)
 - [.NET Aspire documentation](https://learn.microsoft.com/dotnet/aspire/)
 - [MCP Inspector](https://github.com/modelcontextprotocol/inspector)
 - [CommunityToolkit.Aspire.Hosting.McpInspector](https://github.com/CommunityToolkit/Aspire)
