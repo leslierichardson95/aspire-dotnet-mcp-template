@@ -1,6 +1,7 @@
-import { McpServer } from "@modelcontextprotocol/server";
-import { NodeStreamableHTTPServerTransport } from "@modelcontextprotocol/node";
-import { createMcpExpressApp } from "@modelcontextprotocol/express";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import { createMcpExpressApp } from "@modelcontextprotocol/sdk/server/express.js";
+import type { Request, Response } from "express";
 import * as z from "zod/v4";
 
 const server = new McpServer({
@@ -28,13 +29,13 @@ server.registerTool(
 const app = createMcpExpressApp();
 
 // Health check endpoint for Aspire orchestration.
-app.get("/health", (_req, res) => {
+app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "healthy" });
 });
 
 // MCP endpoint — clients connect here to discover and invoke tools.
-app.post("/", async (req, res) => {
-  const transport = new NodeStreamableHTTPServerTransport({
+app.post("/", async (req: Request, res: Response) => {
+  const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined,
   });
   await server.connect(transport);
