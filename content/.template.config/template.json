@@ -1,6 +1,6 @@
 {
   "$schema": "http://json.schemastore.org/template",
-  "author": "Copilot + lerich",
+  "author": "Leslie Richardson",
   "classifications": ["Aspire", "AI", "MCP"],
   "identity": "AspireMcpTemplate",
   "name": "Aspire MCP Server App",
