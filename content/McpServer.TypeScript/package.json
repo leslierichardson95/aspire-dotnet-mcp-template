@@ -8,10 +8,13 @@
     "start": "node --require ./dist/instrumentation.js dist/index.js"
   },
   "dependencies": {
+    "@grpc/grpc-js": "^1.14.3",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@opentelemetry/auto-instrumentations-node": "^0.72.0",
-    "@opentelemetry/exporter-metrics-otlp-proto": "^0.214.0",
-    "@opentelemetry/exporter-trace-otlp-proto": "^0.214.0",
+    "@opentelemetry/exporter-logs-otlp-grpc": "^0.214.0",
+    "@opentelemetry/exporter-metrics-otlp-grpc": "^0.214.0",
+    "@opentelemetry/exporter-trace-otlp-grpc": "^0.214.0",
+    "@opentelemetry/sdk-logs": "^0.214.0",
     "@opentelemetry/sdk-node": "^0.214.0",
     "express": "^5.1.0",
     "zod": "^3.25.0"

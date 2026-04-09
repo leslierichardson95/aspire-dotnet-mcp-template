@@ -98,7 +98,14 @@ app.get("/", async (req: Request, res: Response) => {
     await transport.handleRequest(req, res);
     return;
   }
-  // Browser or probe without session — return a friendly message.
+  // No session — the MCP spec says return 405 so clients know GET-based
+  // notification streams are only available after a session is created.
+  const accept = req.headers.accept ?? "";
+  if (accept.includes("text/event-stream")) {
+    res.status(405).set("Allow", "POST, DELETE").end();
+    return;
+  }
+  // Plain browser probe — return a friendly message.
   res.json({
     name: "mcp-server",
     version: "1.0.0",
