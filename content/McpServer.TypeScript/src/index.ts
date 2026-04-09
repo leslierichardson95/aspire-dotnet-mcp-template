@@ -98,10 +98,12 @@ app.get("/", async (req: Request, res: Response) => {
     await transport.handleRequest(req, res);
     return;
   }
-  res.status(400).json({
-    jsonrpc: "2.0",
-    error: { code: -32000, message: "Invalid or missing session ID" },
-    id: null,
+  // Browser or probe without session — return a friendly message.
+  res.json({
+    name: "mcp-server",
+    version: "1.0.0",
+    protocol: "MCP Streamable HTTP",
+    hint: "POST to this URL with a JSON-RPC initialize request to start a session.",
   });
 });
 
