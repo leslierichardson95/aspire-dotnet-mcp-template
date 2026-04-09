@@ -10,7 +10,14 @@ const sdk = new NodeSDK({
   metricReader: new PeriodicExportingMetricReader({
     exporter: new OTLPMetricExporter(),
   }),
-  instrumentations: [getNodeAutoInstrumentations()],
+  instrumentations: [
+    getNodeAutoInstrumentations({
+      // Express v5 uses path-to-regexp v8 which is incompatible with the
+      // OTEL Express instrumentation. HTTP instrumentation still captures
+      // all inbound/outbound requests.
+      "@opentelemetry/instrumentation-express": { enabled: false },
+    }),
+  ],
 });
 
 sdk.start();

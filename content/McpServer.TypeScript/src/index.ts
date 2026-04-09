@@ -37,12 +37,11 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
     "Content-Type, Accept, mcp-session-id"
   );
   res.setHeader("Access-Control-Expose-Headers", "mcp-session-id");
+  if (_req.method === "OPTIONS") {
+    res.sendStatus(204);
+    return;
+  }
   next();
-});
-
-// Preflight handler.
-app.options("*", (_req: Request, res: Response) => {
-  res.sendStatus(204);
 });
 
 // Health check endpoint for Aspire orchestration.
