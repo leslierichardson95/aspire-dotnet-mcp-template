@@ -4,7 +4,8 @@ import random
 from mcp.server.fastmcp import FastMCP
 from starlette.responses import JSONResponse
 
-mcp = FastMCP("mcp-server", stateless_http=True, json_response=True)
+port = int(os.environ.get("PORT", "8000"))
+mcp = FastMCP("mcp-server", host="0.0.0.0", port=port, stateless_http=True, json_response=True)
 
 
 # Sample tool — generates a random number between min and max.
@@ -26,5 +27,4 @@ async def health_check(request):
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", "8080"))
-    mcp.run(transport="streamable-http", host="0.0.0.0", port=port)
+    mcp.run(transport="streamable-http")

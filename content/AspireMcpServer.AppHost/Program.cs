@@ -26,6 +26,10 @@ var inspector = builder.AddMcpInspector("inspector", options =>
     {
         options.InspectorVersion = inspectorVersion;
     })
+#if (IsPython)
+    .WithMcpServer(mcpServer, path: "/mcp");
+#else
     .WithMcpServer(mcpServer, path: "/");
+#endif
 
 builder.Build().Run();
