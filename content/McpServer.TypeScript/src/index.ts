@@ -1,32 +1,39 @@
+import crypto from "node:crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { createMcpExpressApp } from "@modelcontextprotocol/sdk/server/express.js";
 import type { Request, Response, NextFunction } from "express";
 import * as z from "zod/v4";
 
-const server = new McpServer({
-  name: "mcp-server",
-  version: "1.0.0",
-});
+// Factory — each session needs its own McpServer instance because the SDK
+// binds one transport per server.
+function createServer(): McpServer {
+  const server = new McpServer({ name: "mcp-server", version: "1.0.0" });
 
-// Sample tool — generates a random number between min and max.
-server.registerTool(
-  "get_random_number",
-  {
-    description:
-      "Generates a random number between the specified minimum and maximum values.",
-    inputSchema: {
-      min: z.number().int().default(0).describe("Minimum value (inclusive)"),
-      max: z.number().int().default(100).describe("Maximum value (exclusive)"),
+  server.registerTool(
+    "get_random_number",
+    {
+      description:
+        "Generates a random number between the specified minimum and maximum values.",
+      inputSchema: {
+        min: z.number().int().default(0).describe("Minimum value (inclusive)"),
+        max: z
+          .number()
+          .int()
+          .default(100)
+          .describe("Maximum value (exclusive)"),
+      },
     },
-  },
-  async ({ min, max }) => {
-    const result = Math.floor(Math.random() * (max - min)) + min;
-    return { content: [{ type: "text", text: String(result) }] };
-  }
-);
+    async ({ min, max }) => {
+      const result = Math.floor(Math.random() * (max - min)) + min;
+      return { content: [{ type: "text", text: String(result) }] };
+    }
+  );
 
-const app = createMcpExpressApp();
+  return server;
+}
+
+const app = createMcpExpressApp({ host: "0.0.0.0" });
 
 // CORS — required so the MCP Inspector (different origin) can reach this server.
 app.use((_req: Request, res: Response, next: NextFunction) => {
@@ -49,29 +56,66 @@ app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "healthy" });
 });
 
-// MCP endpoint — clients POST here to discover and invoke tools.
+// Session-based transport map — the Inspector needs sessions to open SSE
+// streams for server-initiated messages.
+const sessions = new Map<
+  string,
+  { server: McpServer; transport: StreamableHTTPServerTransport }
+>();
+
 app.post("/", async (req: Request, res: Response) => {
+  const sessionId = req.headers["mcp-session-id"] as string | undefined;
+
+  if (sessionId && sessions.has(sessionId)) {
+    const { transport } = sessions.get(sessionId)!;
+    await transport.handleRequest(req, res, req.body);
+    return;
+  }
+
+  // New session — create a fresh server + transport pair.
   const transport = new StreamableHTTPServerTransport({
-    sessionIdGenerator: undefined,
+    sessionIdGenerator: () => crypto.randomUUID(),
   });
+
+  const server = createServer();
+
+  transport.onclose = () => {
+    if (transport.sessionId) sessions.delete(transport.sessionId);
+  };
+
   await server.connect(transport);
   await transport.handleRequest(req, res, req.body);
+
+  if (transport.sessionId) {
+    sessions.set(transport.sessionId, { server, transport });
+  }
 });
 
-// GET / — stateless server does not support SSE streams.
-app.get("/", (_req: Request, res: Response) => {
-  res.status(405).json({
+app.get("/", async (req: Request, res: Response) => {
+  const sessionId = req.headers["mcp-session-id"] as string | undefined;
+  if (sessionId && sessions.has(sessionId)) {
+    const { transport } = sessions.get(sessionId)!;
+    await transport.handleRequest(req, res);
+    return;
+  }
+  res.status(400).json({
     jsonrpc: "2.0",
-    error: { code: -32000, message: "Method not allowed (stateless mode)" },
+    error: { code: -32000, message: "Invalid or missing session ID" },
     id: null,
   });
 });
 
-// DELETE / — stateless server has no sessions to terminate.
-app.delete("/", (_req: Request, res: Response) => {
-  res.status(405).json({
+app.delete("/", async (req: Request, res: Response) => {
+  const sessionId = req.headers["mcp-session-id"] as string | undefined;
+  if (sessionId && sessions.has(sessionId)) {
+    const { transport } = sessions.get(sessionId)!;
+    await transport.handleRequest(req, res);
+    sessions.delete(sessionId);
+    return;
+  }
+  res.status(400).json({
     jsonrpc: "2.0",
-    error: { code: -32000, message: "Method not allowed (stateless mode)" },
+    error: { code: -32000, message: "Invalid or missing session ID" },
     id: null,
   });
 });
