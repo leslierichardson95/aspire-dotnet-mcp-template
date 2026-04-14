@@ -6,7 +6,7 @@
   "name": "Aspire MCP Server App",
   "defaultName": "AspireMcpServer",
   "shortName": "aspire-mcp",
-  "description": "A .NET Aspire solution with an MCP server (Model Context Protocol) and MCP Inspector for testing and debugging.",
+  "description": "An Aspire solution with an MCP server (Model Context Protocol) and MCP Inspector for testing and debugging.",
   "sourceName": "AspireMcpServer",
   "preferNameDirectory": false,
   "tags": {

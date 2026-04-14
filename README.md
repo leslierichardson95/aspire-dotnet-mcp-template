@@ -1,6 +1,6 @@
 # Aspire MCP Server App Template
 
-A [.NET Aspire](https://learn.microsoft.com/dotnet/aspire/) project template that scaffolds a complete [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server with integrated [MCP Inspector](https://github.com/modelcontextprotocol/inspector) for testing and debugging — ready to run in seconds.
+A [Aspire](https://aspire.dev) project template that scaffolds a complete [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server with integrated [MCP Inspector](https://github.com/modelcontextprotocol/inspector) for testing and debugging — ready to run in seconds.
 
 ## What's included
 
@@ -18,14 +18,14 @@ The template also includes a sample `RandomNumberTools` class demonstrating how 
 - **Always-latest Inspector** — Defaults to the latest published Inspector version (`npx @modelcontextprotocol/inspector@latest`). Pin a specific version via config if needed.
 - **Composable by design** — Need a database, cache, or message queue behind your MCP tools? Add them as Aspire components with one line each — service discovery, connection strings, and startup ordering are handled automatically.
 - **Full observability** — OpenTelemetry tracing and structured logging across every component. When an MCP tool calls a database, then a cache, then an external API, you see the full distributed trace in the Aspire dashboard.
-- **Dev/prod parity** — The same component definitions that run locally (containers for Redis, Postgres, etc.) map to real Azure resources when you deploy with `azd up`.
+- **Dev/prod parity** — The same component definitions that run locally (containers for Redis, Postgres, etc.) map to real Azure resources when you deploy with `aspire deploy`.
 - **Production-ready structure** — The McpServer project deploys independently; the AppHost and Inspector are dev-time only.
 
 ## Prerequisites
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (or later)
 - [Node.js](https://nodejs.org/) (required for the MCP Inspector, which runs via `npx`)
-- [.NET Aspire workload](https://learn.microsoft.com/dotnet/aspire/fundamentals/setup-tooling) or the [Aspire CLI](https://learn.microsoft.com/dotnet/aspire/fundamentals/aspire-cli)
+- [Aspire CLI](https://aspire.dev/cli)
 
 ## Getting started
 
@@ -39,19 +39,12 @@ dotnet new install <path-to-this-template>/content
 
 ```bash
 dotnet new aspire-mcp -n MyMcpServer
-cd MyMcpServer
 ```
 
 ### Run it
 
 ```bash
-dotnet run --project MyMcpServer.AppHost
-```
-
-Or with the Aspire CLI:
-
-```bash
-aspire run
+aspire start
 ```
 
 This starts the Aspire dashboard (typically at `https://localhost:17xxx`). From there you'll see two resources:
@@ -75,7 +68,7 @@ public async Task<string> GetWeather(
 }
 ```
 
-Tools are auto-discovered — any class registered with `.WithTools<T>()` in `Program.cs` is available to MCP clients.
+Tools are auto-discovered — any class registered with `.WithTools<T>()` in `AppHost.cs` is available to MCP clients.
 
 ## Configuration
 
@@ -101,21 +94,10 @@ set MCP_INSPECTOR_VERSION=0.21.1
 
 Only the **McpServer** project is deployed to production. The AppHost and Inspector are development tools and are not included in the deployment.
 
-### 1. Initialize Azure Developer CLI
-
-From the AppHost project directory:
+### Deploy
 
 ```bash
-cd MyMcpServer.AppHost
-azd init
-```
-
-Select your Azure subscription and region when prompted. This generates the infrastructure-as-code (Bicep) for Azure Container Apps.
-
-### 2. Deploy
-
-```bash
-azd up
+aspire deploy
 ```
 
 This will:
@@ -124,9 +106,9 @@ This will:
 - Deploy it to Azure Container Apps with HTTPS enabled
 - Configure health checks using the `/health` endpoint
 
-### 3. Verify
+### Verify
 
-After deployment completes, `azd` prints the live URL. Test it:
+After deployment completes, Aspire prints the live URL. Test it:
 
 ```bash
 curl -X POST https://your-app.azurecontainerapps.io/ \
@@ -201,7 +183,7 @@ For the full guide, see the [official MCP Registry quickstart](https://modelcont
 ```
 MyMcpServer/
 ├── MyMcpServer.AppHost/           # Aspire orchestrator (dev-time only)
-│   └── Program.cs                 # Wires MCP server + Inspector
+│   └── AppHost.cs                 # Wires MCP server + Inspector
 ├── MyMcpServer.McpServer/         # MCP server (deploys to production)
 │   ├── Program.cs                 # Server setup + endpoint mapping
 │   └── Tools/
@@ -214,6 +196,6 @@ MyMcpServer/
 
 - [Model Context Protocol specification](https://spec.modelcontextprotocol.io)
 - [C# MCP SDK](https://github.com/modelcontextprotocol/csharp-sdk)
-- [.NET Aspire documentation](https://learn.microsoft.com/dotnet/aspire/)
+- [Aspire documentation](https://aspire.dev)
 - [MCP Inspector](https://github.com/modelcontextprotocol/inspector)
 - [CommunityToolkit.Aspire.Hosting.McpInspector](https://github.com/CommunityToolkit/Aspire)

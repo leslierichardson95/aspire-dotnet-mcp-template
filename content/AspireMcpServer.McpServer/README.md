@@ -1,14 +1,14 @@
 # MCP Server
 
 This MCP server was created using the Aspire MCP Server template.
-It uses the [MCP C# SDK](https://modelcontextprotocol.github.io/csharp-sdk) with HTTP transport, integrated into .NET Aspire with the MCP Inspector for testing.
+It uses the [MCP C# SDK](https://modelcontextprotocol.github.io/csharp-sdk) with HTTP transport, integrated into Aspire with the MCP Inspector for testing.
 
 ## Getting Started
 
 Run the Aspire AppHost to start both the MCP server and Inspector:
 
 ```bash
-dotnet run --project AspireMcpServer.AppHost
+aspire start
 ```
 
 The Aspire dashboard will show:
@@ -44,4 +44,4 @@ Once configured, you can ask Copilot Chat for a random number, for example, `Giv
 - [Official MCP Documentation](https://modelcontextprotocol.io/)
 - [Protocol Specification](https://spec.modelcontextprotocol.io/)
 - [MCP C# SDK](https://modelcontextprotocol.github.io/csharp-sdk)
-- [.NET Aspire](https://learn.microsoft.com/dotnet/aspire)
+- [Aspire](https://aspire.dev)
