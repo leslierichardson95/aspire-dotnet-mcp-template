@@ -1,6 +1,6 @@
 # Aspire MCP Server App Template
 
-A [Aspire](https://aspire.dev) project template that scaffolds a complete [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server with integrated [MCP Inspector](https://github.com/modelcontextprotocol/inspector) for testing and debugging — ready to run in seconds.
+An [Aspire](https://aspire.dev) project template that scaffolds a complete [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server with integrated [MCP Inspector](https://github.com/modelcontextprotocol/inspector) for testing and debugging — ready to run in seconds.
 
 ## What's included
 
