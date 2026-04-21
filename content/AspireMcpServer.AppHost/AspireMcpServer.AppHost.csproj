@@ -5,12 +5,12 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <IsAspireHost>true</IsAspireHost>
     <UserSecretsId>aspire-mcp-apphost</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" Version="13.2.0" />
+    <PackageReference Include="Aspire.Hosting.Azure.AppContainers" Version="13.2.0" />
     <PackageReference Include="CommunityToolkit.Aspire.Hosting.McpInspector" Version="13.2.1-beta.532" />
   </ItemGroup>
 

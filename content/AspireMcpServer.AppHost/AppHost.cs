@@ -1,5 +1,7 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
+builder.AddAzureContainerAppEnvironment("aspire-env");
+
 var inspectorVersion = builder.Configuration["MCP_INSPECTOR_VERSION"]
     ?? builder.Configuration["McpInspector:Version"]
     ?? "latest";
