@@ -18,6 +18,12 @@
     {
       "source": "./",
       "target": "./",
+      "exclude": [
+        "**/.vs/**",
+        "**/bin/**",
+        "**/obj/**",
+        "**/*.user"
+      ],
       "modifiers": [
         {
           "condition": "(hostIdentifier != \"dotnetcli\" && hostIdentifier != \"dotnetcli-preview\")",
