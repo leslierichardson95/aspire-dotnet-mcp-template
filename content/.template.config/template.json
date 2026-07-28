@@ -1,6 +1,6 @@
 {
   "$schema": "http://json.schemastore.org/template",
-  "classifications":
+  "classifications": ["Aspire", "AI", "MCP"],
   "identity": "AspireMcpTemplate",
   "name": "Aspire MCP Server App",
   "defaultName": "AspireMcpServer",
