@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\XmlEncodedProjectName.ServiceDefaults\XmlEncodedProjectName.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\AspireMcpServer.ServiceDefaults\AspireMcpServer.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>
