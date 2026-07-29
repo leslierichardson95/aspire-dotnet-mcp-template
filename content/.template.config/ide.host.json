@@ -1,5 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/ide.host",
+  "icon": "icon.png",
   "symbolInfo": [
     {
       "id": "Framework",
